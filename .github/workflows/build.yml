@@ -17,12 +17,25 @@ jobs:
         with:
           gradle-version: 8.9
 
+      - name: Unzip project
+        run: |
+          if [ -z "$(find . -name 'settings.gradle*' -not -path './.git/*' | head -n 1)" ]; then
+            Z=$(find . -name '*.zip' -not -path './.git/*' | head -n 1)
+            if [ -z "$Z" ]; then
+              echo "ไม่พบไฟล์โปรเจกต์หรือไฟล์ zip ใน repo"
+              ls -R
+              exit 1
+            fi
+            echo "แตกไฟล์: $Z"
+            unzip -q "$Z" -d _src
+          fi
+
       - name: Find project folder
         id: find
         run: |
           F=$(find . -name "settings.gradle*" -not -path "./.git/*" | head -n 1)
           if [ -z "$F" ]; then
-            echo "ไม่พบไฟล์ settings.gradle.kts ใน repo นี้ ต้องอัปโหลดไฟล์โปรเจกต์ก่อน"
+            echo "ไม่พบ settings.gradle.kts"
             ls -R
             exit 1
           fi
